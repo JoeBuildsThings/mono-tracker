@@ -10,3 +10,9 @@ export function addDays(date: string, n: number): string {
   d.setDate(d.getDate() + n);
   return toLocalDateString(d);
 }
+
+export function startOfWeek(date: string): string {
+  const d = new Date(`${date}T00:00:00`);
+  const offset = (d.getDay() + 6) % 7;
+  return addDays(date, 0 - offset);
+}
