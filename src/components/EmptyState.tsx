@@ -1,7 +1,13 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fonts, fontSize, lineHeight, radius, space } from '../theme/tokens';
+import { useTheme } from '../theme/ThemeProvider';
+import { fonts, fontSize, lineHeight, radius, space } from '../theme/tokens';
+import type { Palette } from '../theme/tokens';
 
 export function EmptyState({ onAdd }: { onAdd: () => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <View style={styles.wrap}>
       <View style={styles.ring}>
@@ -20,54 +26,56 @@ export function EmptyState({ onAdd }: { onAdd: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: {
-    alignItems: 'center',
-    gap: space.md,
-    paddingVertical: space.xxl,
-    paddingHorizontal: space.lg,
-  },
-  ring: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    borderWidth: 2,
-    borderColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.accent,
-  },
-  title: {
-    fontFamily: fonts.uiStrong,
-    fontSize: fontSize.title,
-    lineHeight: lineHeight.title,
-    color: colors.textPrimary,
-  },
-  body: {
-    fontFamily: fonts.ui,
-    fontSize: fontSize.body,
-    lineHeight: lineHeight.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  button: {
-    minHeight: 48,
-    paddingHorizontal: space.lg,
-    borderRadius: radius.lg,
-    backgroundColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonPressed: { opacity: 0.8 },
-  buttonLabel: {
-    fontFamily: fonts.uiStrong,
-    fontSize: fontSize.body,
-    lineHeight: lineHeight.body,
-    color: colors.onAccent,
-  },
-});
+function makeStyles(colors: Palette) {
+  return StyleSheet.create({
+    wrap: {
+      alignItems: 'center',
+      gap: space.md,
+      paddingVertical: space.xxl,
+      paddingHorizontal: space.lg,
+    },
+    ring: {
+      width: 96,
+      height: 96,
+      borderRadius: 48,
+      borderWidth: 2,
+      borderColor: colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    dot: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: colors.accent,
+    },
+    title: {
+      fontFamily: fonts.uiStrong,
+      fontSize: fontSize.title,
+      lineHeight: lineHeight.title,
+      color: colors.textPrimary,
+    },
+    body: {
+      fontFamily: fonts.ui,
+      fontSize: fontSize.body,
+      lineHeight: lineHeight.body,
+      color: colors.textSecondary,
+      textAlign: 'center',
+    },
+    button: {
+      minHeight: 48,
+      paddingHorizontal: space.lg,
+      borderRadius: radius.lg,
+      backgroundColor: colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonPressed: { opacity: 0.8 },
+    buttonLabel: {
+      fontFamily: fonts.uiStrong,
+      fontSize: fontSize.body,
+      lineHeight: lineHeight.body,
+      color: colors.onAccent,
+    },
+  });
+}

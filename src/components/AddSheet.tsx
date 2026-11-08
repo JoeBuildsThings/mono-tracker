@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
   Animated,
@@ -18,7 +18,9 @@ import { Checkbox } from './Checkbox';
 import { createHabit } from '../db/habitsRepo';
 import { createTask } from '../db/tasksRepo';
 import { addDays, toLocalDateString } from '../domain/dates';
-import { colors, fonts, fontSize, lineHeight, radius, size, space } from '../theme/tokens';
+import { useTheme } from '../theme/ThemeProvider';
+import { fonts, fontSize, lineHeight, radius, size, space } from '../theme/tokens';
+import type { Palette } from '../theme/tokens';
 
 type Kind = 'habit' | 'task';
 type Frequency = 'daily' | 'weekly';
@@ -59,17 +61,10 @@ function dueDate(due: Due): string | null {
   return null;
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      {children}
-    </View>
-  );
-}
-
 export function AddSheet({ visible, onClose, onCreated }: Props) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const translateY = useRef(new Animated.Value(OFFSCREEN)).current;
   const [kind, setKind] = useState<Kind>('habit');
   const [title, setTitle] = useState('');
@@ -123,6 +118,13 @@ export function AddSheet({ visible, onClose, onCreated }: Props) {
     close();
   };
 
+  const field = (label: string, children: ReactNode) => (
+    <View style={styles.field}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      {children}
+    </View>
+  );
+
   return (
     <Modal
       visible={visible}
@@ -160,14 +162,16 @@ export function AddSheet({ visible, onClose, onCreated }: Props) {
 
             {kind === 'habit' ? (
               <>
-                <Field label="FREQUENCY">
+                {field(
+                  'FREQUENCY',
                   <Segmented options={FREQ_OPTIONS} value={frequency} onChange={setFrequency} />
-                </Field>
-                {frequency === 'weekly' ? (
-                  <Field label="TIMES PER WEEK">
-                    <Segmented options={TARGET_OPTIONS} value={target} onChange={setTarget} />
-                  </Field>
-                ) : null}
+                )}
+                {frequency === 'weekly'
+                  ? field(
+                      'TIMES PER WEEK',
+                      <Segmented options={TARGET_OPTIONS} value={target} onChange={setTarget} />
+                    )
+                  : null}
                 <Pressable
                   onPress={() => setGrace((g) => !g)}
                   accessibilityRole="checkbox"
@@ -179,9 +183,7 @@ export function AddSheet({ visible, onClose, onCreated }: Props) {
                 </Pressable>
               </>
             ) : (
-              <Field label="DUE">
-                <Segmented options={DUE_OPTIONS} value={due} onChange={setDue} />
-              </Field>
+              field('DUE', <Segmented options={DUE_OPTIONS} value={due} onChange={setDue} />)
             )}
           </ScrollView>
 
@@ -199,78 +201,84 @@ export function AddSheet({ visible, onClose, onCreated }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  fill: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  scrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(18, 18, 18, 0.72)',
-  },
-  sheet: {
-    maxHeight: '88%',
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.lg,
-    borderTopRightRadius: radius.lg,
-    paddingHorizontal: space.md,
-    paddingTop: space.sm,
-    gap: space.md,
-  },
-  handle: {
-    alignSelf: 'center',
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.outline,
-  },
-  body: {
-    gap: space.md,
-  },
-  input: {
-    minHeight: size.row,
-    backgroundColor: colors.surfaceHigh,
-    borderRadius: radius.md,
-    paddingHorizontal: space.md,
-    fontFamily: fonts.ui,
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-  },
-  field: {
-    gap: space.sm,
-  },
-  fieldLabel: {
-    fontFamily: fonts.monoStrong,
-    fontSize: fontSize.caption,
-    lineHeight: lineHeight.caption,
-    color: colors.textSecondary,
-    letterSpacing: 1,
-  },
-  graceRow: {
-    minHeight: size.touch,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-  },
-  graceText: {
-    flex: 1,
-    fontFamily: fonts.ui,
-    fontSize: fontSize.body,
-    lineHeight: lineHeight.body,
-    color: colors.textPrimary,
-  },
-  save: {
-    minHeight: size.row,
-    borderRadius: radius.lg,
-    backgroundColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveDisabled: { opacity: 0.4 },
-  saveLabel: {
-    fontFamily: fonts.uiStrong,
-    fontSize: fontSize.body,
-    lineHeight: lineHeight.body,
-    color: colors.onAccent,
-  },
-});
+function makeStyles(colors: Palette) {
+  return StyleSheet.create({
+    fill: {
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
+    scrim: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: colors.scrim,
+    },
+    sheet: {
+      maxHeight: '88%',
+      backgroundColor: colors.surface,
+      borderTopLeftRadius: radius.lg,
+      borderTopRightRadius: radius.lg,
+      paddingHorizontal: space.md,
+      paddingTop: space.sm,
+      gap: space.md,
+    },
+    handle: {
+      alignSelf: 'center',
+      width: 40,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: colors.outline,
+    },
+    body: {
+      gap: space.md,
+    },
+    input: {
+      minHeight: size.row,
+      backgroundColor: colors.surfaceHigh,
+      borderRadius: radius.md,
+      paddingHorizontal: space.md,
+      fontFamily: fonts.ui,
+      fontSize: fontSize.body,
+      color: colors.textPrimary,
+    },
+    field: {
+      gap: space.sm,
+    },
+    fieldLabel: {
+      fontFamily: fonts.monoStrong,
+      fontSize: fontSize.caption,
+      lineHeight: lineHeight.caption,
+      color: colors.textSecondary,
+      letterSpacing: 1,
+    },
+    graceRow: {
+      minHeight: size.touch,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space.md,
+    },
+    graceText: {
+      flex: 1,
+      fontFamily: fonts.ui,
+      fontSize: fontSize.body,
+      lineHeight: lineHeight.body,
+      color: colors.textPrimary,
+    },
+    save: {
+      minHeight: size.row,
+      borderRadius: radius.lg,
+      backgroundColor: colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    saveDisabled: { opacity: 0.4 },
+    saveLabel: {
+      fontFamily: fonts.uiStrong,
+      fontSize: fontSize.body,
+      lineHeight: lineHeight.body,
+      color: colors.onAccent,
+    },
+  });
+}

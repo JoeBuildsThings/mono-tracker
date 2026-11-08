@@ -6,9 +6,24 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { Manrope_400Regular, Manrope_600SemiBold } from '@expo-google-fonts/manrope';
 import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from '@expo-google-fonts/jetbrains-mono';
-import { colors } from '../theme/tokens';
+import { ThemeProvider, useTheme } from '../theme/ThemeProvider';
 
 SplashScreen.preventAutoHideAsync();
+
+function Shell() {
+  const { colors, scheme } = useTheme();
+  return (
+    <>
+      <StatusBar style={scheme === 'light' ? 'dark' : 'light'} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      />
+    </>
+  );
+}
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -33,14 +48,8 @@ export default function RootLayout() {
   if (!ready) return null;
 
   return (
-    <>
-      <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      />
-    </>
+    <ThemeProvider>
+      <Shell />
+    </ThemeProvider>
   );
 }

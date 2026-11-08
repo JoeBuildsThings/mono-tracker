@@ -1,5 +1,8 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fonts, fontSize, lineHeight, radius, space } from '../theme/tokens';
+import { useTheme } from '../theme/ThemeProvider';
+import { fonts, fontSize, lineHeight, radius, space } from '../theme/tokens';
+import type { Palette } from '../theme/tokens';
 
 interface Option<T> {
   key: T;
@@ -13,6 +16,9 @@ interface Props<T> {
 }
 
 export function Segmented<T extends string | number>({ options, value, onChange }: Props<T>) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <View style={styles.row}>
       {options.map((o) => {
@@ -33,28 +39,30 @@ export function Segmented<T extends string | number>({ options, value, onChange 
   );
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: space.sm,
-  },
-  chip: {
-    flexGrow: 1,
-    minWidth: 44,
-    minHeight: 48,
-    paddingHorizontal: space.md,
-    borderRadius: radius.md,
-    backgroundColor: colors.surfaceHigh,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chipSelected: { backgroundColor: colors.accent },
-  label: {
-    fontFamily: fonts.uiStrong,
-    fontSize: fontSize.body,
-    lineHeight: lineHeight.body,
-    color: colors.textSecondary,
-  },
-  labelSelected: { color: colors.onAccent },
-});
+function makeStyles(colors: Palette) {
+  return StyleSheet.create({
+    row: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: space.sm,
+    },
+    chip: {
+      flexGrow: 1,
+      minWidth: 44,
+      minHeight: 48,
+      paddingHorizontal: space.md,
+      borderRadius: radius.md,
+      backgroundColor: colors.surfaceHigh,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    chipSelected: { backgroundColor: colors.accent },
+    label: {
+      fontFamily: fonts.uiStrong,
+      fontSize: fontSize.body,
+      lineHeight: lineHeight.body,
+      color: colors.textSecondary,
+    },
+    labelSelected: { color: colors.onAccent },
+  });
+}

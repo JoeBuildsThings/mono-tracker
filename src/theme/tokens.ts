@@ -1,4 +1,17 @@
-export const colors = {
+export interface Palette {
+  background: string;
+  surface: string;
+  surfaceHigh: string;
+  outline: string;
+  textPrimary: string;
+  textSecondary: string;
+  accent: string;
+  onAccent: string;
+  overdue: string;
+  scrim: string;
+}
+
+export const darkColors: Palette = {
   background: '#121212',
   surface: '#1B1B1D',
   surfaceHigh: '#242427',
@@ -8,7 +21,21 @@ export const colors = {
   accent: '#B5E48C',
   onAccent: '#121212',
   overdue: '#F2A488',
-} as const;
+  scrim: 'rgba(18, 18, 18, 0.72)',
+};
+
+export const lightColors: Palette = {
+  background: '#F3F4F6',
+  surface: '#FAFAFA',
+  surfaceHigh: '#E8E9EC',
+  outline: '#D4D4D8',
+  textPrimary: '#18181B',
+  textSecondary: '#52525B',
+  accent: '#3F7A22',
+  onAccent: '#F3F4F6',
+  overdue: '#B4482A',
+  scrim: 'rgba(24, 24, 27, 0.45)',
+};
 
 export const fonts = {
   ui: 'Manrope_400Regular',
