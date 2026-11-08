@@ -9,6 +9,7 @@ import { setTaskCompleted } from '../db/tasksRepo';
 import { HabitRow } from '../components/HabitRow';
 import { TaskRow } from '../components/TaskRow';
 import { EmptyState } from '../components/EmptyState';
+import { AddSheet } from '../components/AddSheet';
 import { colors, fonts, fontSize, lineHeight, radius, size, space } from '../theme/tokens';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -75,8 +76,10 @@ export default function TodayScreen() {
     [refresh]
   );
 
+  const [sheetOpen, setSheetOpen] = useState(false);
+
   const onAdd = useCallback(() => {
-    console.log('add: the bottom sheet arrives in the next slice');
+    setSheetOpen(true);
   }, []);
 
   const done =
@@ -149,6 +152,8 @@ export default function TodayScreen() {
       >
         <Text style={styles.fabLabel}>+</Text>
       </Pressable>
+
+      <AddSheet visible={sheetOpen} onClose={() => setSheetOpen(false)} onCreated={refresh} />
     </View>
   );
 }
